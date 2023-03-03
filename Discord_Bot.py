@@ -243,4 +243,4 @@ async def help(ctx):
   await ctx.send(embed=embed)
     
    
-client.run("MTA4MDE5Nzk4NjgyNDQ5NTE3Nw.GqKiqP.ucdB8msG3k4DxZy9CPBuW-MkAFVBntxsmogf6c")
+client.run("TOKEN")
