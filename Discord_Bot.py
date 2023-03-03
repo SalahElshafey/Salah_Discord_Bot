@@ -41,8 +41,7 @@ loves=["Loves you!"]
 cry_gif=['https://media.tenor.com/6uIlQAHIkNoAAAAS/cry.gif','https://media.tenor.com/P8OYV56HSRAAAAAM/cry-sad.gif','https://media.tenor.com/FantEuP4bd4AAAAM/alex-cry.gif','https://media.tenor.com/A_ZtGhRQ4fcAAAAM/crying.gif','https://media.tenor.com/UIXwsWt9n9cAAAAS/crying-girl-crying.gif','https://media.tenor.com/pRTPXrxI2UAAAAAM/crying-meme-black-guy-cries.gif','https://media.tenor.com/K61LBZu_g70AAAAM/cry-dog.gif']
 cry_=["Cries"]
 
-porno_gif=['https://cdn.porngifs.com/img/6428','https://cdn.porngifs.com/img/16558','https://cdn.porngifs.com/img/22243','https://cdn.porngifs.com/img/16826','https://cdn.porngifs.com/img/918','https://wetgif.com/wp-content/uploads/porno-gif-gruppovuha.gif','https://wetgif.com/wp-content/uploads/2021/01/deutsch-porno-m.gif','https://wetgif.com/wp-content/uploads/m.gif','https://wetgif.com/wp-content/uploads/milf-gifs-65.gif','https://wetgif.com/wp-content/uploads/1gentle-sex-m.gif','http://www.porngif.top/gif/ze%20zadu/0270.gif','http://www.porngif.top/gif/ze%20predu/0643.gif','http://www.porngif.top/gif/ze%20zadu/0527.gif','http://www.porngif.top/gif/ze%20predu/0530.gif','http://www.porngif.top/gif/ze%20zadu/0016.gif','http://www.porngif.top/gif/na%20konicka/0043.gif']
-porn_=["porn"]
+
 
 
 @client.command()
@@ -154,14 +153,7 @@ async def cry(ctx):
   embed.set_image(url=(random.choice(cry_gif)))
   await ctx.send(embed=embed)
 
-@client.command()
-async def porn(ctx):
-  embed=discord.Embed(
-    color=(discord.Color.random()),
-    description=f"{ctx.author.mention} {(random.choice(porn_))}"
-  )
-  embed.set_image(url=(random.choice(porno_gif)))
-  await ctx.send(embed=embed)
+
 
 @tasks.loop(seconds=10)
 async def change_status():
