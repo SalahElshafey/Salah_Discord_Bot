@@ -1,5 +1,5 @@
 
-![Logo](https://www.google.com/url?sa=i&url=https%3A%2F%2Fdiscord.com%2Fbranding&psig=AOvVaw3Upho6H5d4oSA19fqp5te6&ust=1677930658212000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCJiclfnYv_0CFQAAAAAdAAAAABAE)
+![Logo](https://github.com/SalahElshafey/Salah_Discord_Bot/blob/main/SS/logo.png?raw=true)
 
 # Salah_Discord_Bot
 This is a discord bot that talk,send GIFS, plays youtube music &amp; inspire you when you are either sad or depressed
