@@ -5,12 +5,15 @@ import random
 import os
 import youtube_dl
 import asyncio
-
+from dotenv import load_dotenv
+from discord.utils import get
+from discord import FFmpegPCMAudio
 
 client=commands.Bot(command_prefix="-",intents=discord.Intents.all())
-voice_clients = {}
-yt_dl_opts = {'format': 'bestaudio/best'}
-ytdl = youtube_dl.YoutubeDL(yt_dl_opts)
+load_dotenv()
+
+players = {}
+
 
 ffmpeg_options = {'options': "-vn"}
 
@@ -38,53 +41,77 @@ loves=["Loves you!"]
 cry_gif=['https://media.tenor.com/6uIlQAHIkNoAAAAS/cry.gif','https://media.tenor.com/P8OYV56HSRAAAAAM/cry-sad.gif','https://media.tenor.com/FantEuP4bd4AAAAM/alex-cry.gif','https://media.tenor.com/A_ZtGhRQ4fcAAAAM/crying.gif','https://media.tenor.com/UIXwsWt9n9cAAAAS/crying-girl-crying.gif','https://media.tenor.com/pRTPXrxI2UAAAAAM/crying-meme-black-guy-cries.gif','https://media.tenor.com/K61LBZu_g70AAAAM/cry-dog.gif']
 cry_=["Cries"]
 
-
-@client.event
-async def on_message(msg):
-    if msg.content.startswith("-play"):
-
-        try:
-            voice_client = await msg.author.voice.channel.connect()
-            voice_clients[voice_client.guild.id] = voice_client
-        except:
-            print("error")
-
-        try:
-            url = msg.content.split()[1]
-
-            loop = asyncio.get_event_loop()
-            data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=False))
-
-            song = data['url']
-            player = discord.FFmpegPCMAudio(song, **ffmpeg_options)
-
-            voice_clients[msg.guild.id].play(player)
-
-        except Exception as err:
-            print(err)
+porno_gif=['https://cdn.porngifs.com/img/6428','https://cdn.porngifs.com/img/16558','https://cdn.porngifs.com/img/22243','https://cdn.porngifs.com/img/16826','https://cdn.porngifs.com/img/918','https://wetgif.com/wp-content/uploads/porno-gif-gruppovuha.gif','https://wetgif.com/wp-content/uploads/2021/01/deutsch-porno-m.gif','https://wetgif.com/wp-content/uploads/m.gif','https://wetgif.com/wp-content/uploads/milf-gifs-65.gif','https://wetgif.com/wp-content/uploads/1gentle-sex-m.gif','http://www.porngif.top/gif/ze%20zadu/0270.gif','http://www.porngif.top/gif/ze%20predu/0643.gif','http://www.porngif.top/gif/ze%20zadu/0527.gif','http://www.porngif.top/gif/ze%20predu/0530.gif','http://www.porngif.top/gif/ze%20zadu/0016.gif','http://www.porngif.top/gif/na%20konicka/0043.gif']
+porn_=["porn"]
 
 
-    if msg.content.startswith("-pause"):
-        try:
-            voice_clients[msg.guild.id].pause()
-        except Exception as err:
-            print(err)
+@client.command()
+async def join(ctx):
+    channel = ctx.message.author.voice.channel
+    voice = get(client.voice_clients, guild=ctx.guild)
+    if voice and voice.is_connected():
+        await voice.move_to(channel)
+    else:
+        voice = await channel.connect()
 
-    # This resumes the current song playing if it's been paused
-    if msg.content.startswith("-resume"):
-        try:
-            voice_clients[msg.guild.id].resume()
-        except Exception as err:
-            print(err)
 
-    # This stops the current playing song
-    if msg.content.startswith("-stop"):
-        try:
-            voice_clients[msg.guild.id].stop()
-            await voice_clients[msg.guild.id].disconnect()
-        except Exception as err:
-            print(err)
+# command to play sound from a youtube URL
+@client.command()
+async def play(ctx, url):
+    YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
+    FFMPEG_OPTIONS = {
+        'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+    voice = get(client.voice_clients, guild=ctx.guild)
 
+    if not voice.is_playing():
+        with youtube_dl(YDL_OPTIONS) as ydl:
+            info = ydl.extract_info(url, download=False)
+        URL = info['url']
+        voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+        voice.is_playing()
+        await ctx.send('Bot is playing')
+
+# check if the bot is already playing
+    else:
+        await ctx.send("Bot is already playing")
+        return
+
+
+# command to resume voice if it is paused
+@client.command()
+async def resume(ctx):
+    voice = get(client.voice_clients, guild=ctx.guild)
+
+    if not voice.is_playing():
+        voice.resume()
+        await ctx.send('Bot is resuming')
+
+
+# command to pause voice if it is playing
+@client.command()
+async def pause(ctx):
+    voice = get(client.voice_clients, guild=ctx.guild)
+
+    if voice.is_playing():
+        voice.pause()
+        await ctx.send('Bot has been paused')
+
+
+# command to stop voice
+@client.command()
+async def stop(ctx):
+    voice = get(client.voice_clients, guild=ctx.guild)
+
+    if voice.is_playing():
+        voice.stop()
+        await ctx.send('Stopping...')
+
+
+# command to clear channel messages
+@client.command()
+async def clear(ctx, amount=5):
+    await ctx.channel.purge(limit=amount)
+    await ctx.send("Messages have been cleared")
 
 @client.command()
 async def punch(ctx):
@@ -127,6 +154,15 @@ async def cry(ctx):
   embed.set_image(url=(random.choice(cry_gif)))
   await ctx.send(embed=embed)
 
+@client.command()
+async def porn(ctx):
+  embed=discord.Embed(
+    color=(discord.Color.random()),
+    description=f"{ctx.author.mention} {(random.choice(porn_))}"
+  )
+  embed.set_image(url=(random.choice(porno_gif)))
+  await ctx.send(embed=embed)
+
 @tasks.loop(seconds=10)
 async def change_status():
  await client.change_presence(activity=discord.Game(choice(status)))
@@ -153,15 +189,14 @@ async def ping(ctx):
 
 @client.command()
 async def talk(ctx, *,question):
-  with open("./responsis.txt","r") as f:
+  with open("Salah_BOT\responsis.txt","r") as f:
     random_responses=f.readlines()
     response=random.choice(random_responses)
-
   await ctx.send(response)
 
 @client.command()
 async def inspire(ctx):
-  with open("./quotes.txt","r") as f:
+  with open("Salah_BOT\quotes.txt","r") as f:
     random_quotes=f.readlines()
     quotes=random.choice(random_quotes)
   await ctx.send(quotes)
@@ -208,7 +243,4 @@ async def help(ctx):
   await ctx.send(embed=embed)
     
    
-
-
-
-client.run("MTA4MDE5Nzk4NjgyNDQ5NTE3Nw.GrcLmQ.tgiWviQyPyPSsqlzVA8XOOWYM_PYojz_zj5OsY")
+client.run("MTA4MDE5Nzk4NjgyNDQ5NTE3Nw.GqKiqP.ucdB8msG3k4DxZy9CPBuW-MkAFVBntxsmogf6c")
